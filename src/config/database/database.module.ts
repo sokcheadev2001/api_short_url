@@ -12,7 +12,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         username: ConfigService.get<string>('DB_USERNAME'),
         password: ConfigService.get<string>('DB_PASSWORD'),
         database: ConfigService.get<string>('DB_DATABASE'),
-        entities: [],
+        entities: ['dist/**/*.entity.js'],
         synchronize: process.env.NODE_ENV == 'production' ? false : true,
       }),
     }),
