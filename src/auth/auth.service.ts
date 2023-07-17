@@ -37,4 +37,10 @@ export class AuthService {
     }
     throw new UnauthorizedException();
   }
+
+  async Profile(id: number) {
+    const user = await this.usersService.findOne(id);
+    const { password, ...result } = user;
+    return result;
+  }
 }
