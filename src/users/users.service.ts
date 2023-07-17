@@ -82,7 +82,7 @@ export class UsersService {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
-          error: 'Cannot Update user not found',
+          error: 'User not found',
         },
         HttpStatus.NOT_FOUND,
         {
