@@ -68,6 +68,24 @@ export class UsersService {
     }
   }
 
+  async findOneByEmail(email: string): Promise<User> {
+    try {
+      const user = await this.usersRepository.findOneByOrFail({ email });
+      return user;
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'User not found',
+        },
+        HttpStatus.NOT_FOUND,
+        {
+          cause: error,
+        },
+      );
+    }
+  }
+
   async update(id: number, updateUserDto: UpdateUserDto) {
     try {
       const existingUser = await this.findOne(id);
