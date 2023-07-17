@@ -21,16 +21,29 @@ export class UsersService {
     @Inject(REQUEST) private res: Response,
   ) {}
   async create(clientIp: string, createUserDto: CreateUserDto) {
-    // Handle password hashing
-    const salt = await bcrypt.genSalt();
-    const hashPassword = await bcrypt.hash(createUserDto.password, salt);
+    try {
+      // Handle password hashing
+      const salt = await bcrypt.genSalt();
+      const hashPassword = await bcrypt.hash(createUserDto.password, salt);
 
-    const newUser = new User();
-    newUser.username = createUserDto.username;
-    newUser.email = createUserDto.email;
-    newUser.password = hashPassword;
-    newUser.ip = clientIp;
-    return this.usersRepository.save(newUser);
+      const newUser = new User();
+      newUser.username = createUserDto.username;
+      newUser.email = createUserDto.email;
+      newUser.password = hashPassword;
+      newUser.ip = clientIp;
+      return this.usersRepository.save(newUser);
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: 'Cannot create user',
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: error,
+        },
+      );
+    }
   }
 
   findAll(): Promise<User[]> {
@@ -44,10 +57,10 @@ export class UsersService {
     } catch (error) {
       throw new HttpException(
         {
-          status: HttpStatus.FORBIDDEN,
+          status: HttpStatus.NOT_FOUND,
           error: 'User not found',
         },
-        HttpStatus.FORBIDDEN,
+        HttpStatus.NOT_FOUND,
         {
           cause: error,
         },
@@ -56,21 +69,46 @@ export class UsersService {
   }
 
   async update(id: number, updateUserDto: UpdateUserDto) {
-    const existingUser = await this.findOne(id);
-    if (existingUser) {
-      const updatedUser = await this.usersRepository.save({
-        ...existingUser,
-        ...updateUserDto,
-      });
-      return updatedUser;
-    } else {
-      this.res.status(404).json({
-        message: 'User not found',
-      });
+    try {
+      const existingUser = await this.findOne(id);
+      if (existingUser) {
+        const updatedUser = await this.usersRepository.save({
+          ...existingUser,
+          ...updateUserDto,
+        });
+        return updatedUser;
+      }
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'Cannot Update user not found',
+        },
+        HttpStatus.NOT_FOUND,
+        {
+          cause: error,
+        },
+      );
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: number) {
+    try {
+      const existingUser = await this.findOne(id);
+      if (existingUser) {
+        return this.usersRepository.remove(existingUser);
+      }
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'User not found',
+        },
+        HttpStatus.NOT_FOUND,
+        {
+          cause: error,
+        },
+      );
+    }
   }
 }
