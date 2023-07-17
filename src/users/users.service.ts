@@ -55,8 +55,19 @@ export class UsersService {
     }
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: number, updateUserDto: UpdateUserDto) {
+    const existingUser = await this.findOne(id);
+    if (existingUser) {
+      const updatedUser = await this.usersRepository.save({
+        ...existingUser,
+        ...updateUserDto,
+      });
+      return updatedUser;
+    } else {
+      this.res.status(404).json({
+        message: 'User not found',
+      });
+    }
   }
 
   remove(id: number) {
