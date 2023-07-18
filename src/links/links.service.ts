@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateLinkDto } from './dto/create-link.dto';
 import { UpdateLinkDto } from './dto/update-link.dto';
 import { Repository } from 'typeorm';
@@ -24,6 +24,7 @@ export class LinksService {
     newLink.short_url = short_url;
     newLink.user_id = user_id;
     newLink.ip = ip;
+
     return await this.linksRepository.save(newLink);
   }
 
@@ -31,12 +32,26 @@ export class LinksService {
     return await nanoid(10);
   }
 
+  async getDirection(short_url: string) {
+    const link = await this.findOne(short_url);
+    if (!link) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'Link not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    return link.long_url;
+  }
+
   findAll() {
     return `This action returns all links`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} link`;
+  async findOne(short_url: string) {
+    return await this.linksRepository.findOneBy({ short_url });
   }
 
   update(id: number, updateLinkDto: UpdateLinkDto) {

@@ -29,9 +29,9 @@ export class LinksController {
     return this.linksService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.linksService.findOne(+id);
+  @Get(':short_url')
+  findOne(@Param('id') short_url: string) {
+    return this.linksService.findOne(short_url);
   }
 
   @Patch(':id')
