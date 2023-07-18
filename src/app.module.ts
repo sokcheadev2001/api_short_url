@@ -5,8 +5,15 @@ import { EnvironmentModule } from './config/env/environment.module';
 import { DatabaseModule } from './config/database/database.module';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { LinksModule } from './links/links.module';
 @Module({
-  imports: [EnvironmentModule, DatabaseModule, UsersModule, AuthModule],
+  imports: [
+    EnvironmentModule,
+    DatabaseModule,
+    UsersModule,
+    AuthModule,
+    LinksModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
