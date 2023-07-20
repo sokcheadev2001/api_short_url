@@ -42,7 +42,7 @@ export class AuthController {
     return this.authService.Profile(req.user.id);
   }
 
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @Post('refresh')
   async refresh(@Req() request: Request) {
     return this.authService.refreshToken(request);
