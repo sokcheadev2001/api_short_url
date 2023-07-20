@@ -18,6 +18,7 @@ export class AuthService {
     const accessToken = await this.jwtServices.signAsync(payload);
     const refreshToken = await this.jwtServices.signAsync(payload, {
       secret: process.env.JWT_REFRESH_SECRET_KEY,
+      expiresIn: '1d',
     });
 
     response.cookie('refreshToken', refreshToken, {
@@ -44,6 +45,7 @@ export class AuthService {
 
       const refreshToken = await this.jwtServices.signAsync(payload, {
         secret: process.env.JWT_REFRESH_SECRET_KEY,
+        expiresIn: '1d',
       });
 
       response.cookie('refreshToken', refreshToken, {
@@ -67,17 +69,21 @@ export class AuthService {
   }
 
   async refreshToken(req: Request) {
-    if (!req.cookies?.refreshToken) {
-      throw new UnauthorizedException();
-    }
-    const refreshToken = req.cookies.refreshToken;
-    const payload = await this.jwtServices.verifyAsync(refreshToken, {
-      secret: process.env.JWT_REFRESH_SECRET_KEY,
-    });
-    const id = payload.id;
-    const email = payload.email;
+    try {
+      if (!req.cookies?.refreshToken) {
+        throw new UnauthorizedException();
+      }
+      const refreshToken = req.cookies.refreshToken;
+      const payload = await this.jwtServices.verifyAsync(refreshToken, {
+        secret: process.env.JWT_REFRESH_SECRET_KEY,
+      });
+      const id = payload.id;
+      const email = payload.email;
 
-    const accessToken = await this.jwtServices.signAsync({ id, email });
-    return { accessToken };
+      const accessToken = await this.jwtServices.signAsync({ id, email });
+      return { accessToken };
+    } catch (error) {
+      throw new UnauthorizedException('Refresh token expired');
+    }
   }
 }
