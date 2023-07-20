@@ -6,6 +6,7 @@ import {
   Post,
   Req,
   Request as RequestDecorator,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
@@ -18,19 +19,32 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('register')
-  async register(@Req() request: Request, @Body() registerDto: RegisterDto) {
-    return this.authService.register(request.ip, registerDto);
+  async register(
+    @Res() response: Response,
+    @Req() request: Request,
+    @Body() registerDto: RegisterDto,
+  ) {
+    return this.authService.register(response, request.ip, registerDto);
   }
 
   @Post('login')
   @HttpCode(200)
-  async login(@Body() signInDto: SignInDto) {
-    return this.authService.signIn(signInDto);
+  async login(
+    @Res({ passthrough: true }) response: Response,
+    @Body() signInDto: SignInDto,
+  ) {
+    return this.authService.signIn(response, signInDto);
   }
 
   @UseGuards(AuthGuard)
   @Get('profile')
   getProfile(@RequestDecorator() req) {
     return this.authService.Profile(req.user.id);
+  }
+
+  @UseGuards(AuthGuard)
+  @Post('refresh')
+  async refresh(@Req() request: Request) {
+    return this.authService.refreshToken(request);
   }
 }
