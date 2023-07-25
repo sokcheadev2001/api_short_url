@@ -1,7 +1,9 @@
+import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -23,9 +25,6 @@ export class Link {
   @Column({ default: 0 })
   clicks: number;
 
-  @Column()
-  user_id: number;
-
   @Column({ default: false })
   is_diabled: boolean;
 
@@ -34,4 +33,7 @@ export class Link {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  @ManyToOne(() => User, (user) => user.links)
+  user: User;
 }

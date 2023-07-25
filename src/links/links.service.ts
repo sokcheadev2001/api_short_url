@@ -1,6 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateLinkDto } from './dto/create-link.dto';
-import { UpdateLinkDto } from './dto/update-link.dto';
 import { Repository } from 'typeorm';
 import { Link } from './entities/link.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -22,7 +21,7 @@ export class LinksService {
     const newLink = new Link();
     newLink.long_url = createLinkDto.long_url;
     newLink.short_url = short_url;
-    newLink.user_id = user_id;
+    newLink.user = user_id;
     newLink.ip = ip;
 
     return await this.linksRepository.save(newLink);
@@ -46,16 +45,21 @@ export class LinksService {
     return link.long_url;
   }
 
+  async findByUser(req) {
+    // const user_id = req.user.id;
+    return await this.linksRepository.find({
+      relations: {
+        user: true,
+      },
+    });
+  }
+
   findAll() {
     return `This action returns all links`;
   }
 
   async findOne(short_url: string) {
     return await this.linksRepository.findOneBy({ short_url });
-  }
-
-  update(id: number, updateLinkDto: UpdateLinkDto) {
-    return `This action updates a #${id} link`;
   }
 
   remove(id: number) {

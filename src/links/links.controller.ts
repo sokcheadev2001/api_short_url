@@ -11,7 +11,6 @@ import {
 } from '@nestjs/common';
 import { LinksService } from './links.service';
 import { CreateLinkDto } from './dto/create-link.dto';
-import { UpdateLinkDto } from './dto/update-link.dto';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
 
 @Controller('links')
@@ -24,6 +23,12 @@ export class LinksController {
     return this.linksService.create(req, createLinkDto);
   }
 
+  @UseGuards(AuthGuard)
+  @Get('user')
+  findByUser(@Req() req: Request) {
+    return this.linksService.findByUser(req);
+  }
+
   @Get()
   findAll() {
     return this.linksService.findAll();
@@ -32,11 +37,6 @@ export class LinksController {
   @Get(':short_url')
   findOne(@Param('id') short_url: string) {
     return this.linksService.findOne(short_url);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLinkDto: UpdateLinkDto) {
-    return this.linksService.update(+id, updateLinkDto);
   }
 
   @Delete(':id')
