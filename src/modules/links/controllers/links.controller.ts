@@ -8,9 +8,9 @@ import {
   UseGuards,
   Req,
 } from '@nestjs/common';
-import { LinksService } from './links.service';
-import { CreateLinkDto } from './dto/create-link.dto';
-import { AuthGuard } from 'src/auth/guard/auth.guard';
+import { LinksService } from '../services/links.service';
+import { CreateLinkDto } from '../dto/create-link.dto';
+import { AuthGuard } from 'src/modules/auth/guard/auth.guard';
 
 @Controller('links')
 // @UseGuards(AuthGuard)

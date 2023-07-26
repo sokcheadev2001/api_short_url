@@ -9,11 +9,11 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { AuthService } from './auth.service';
-import { SignInDto } from './dto/signIn.dto';
-import { RegisterDto } from './dto/register.dto';
+import { AuthService } from '../services/auth.service';
+import { SignInDto } from '../dto/signIn.dto';
+import { RegisterDto } from '../dto/register.dto';
 import { Request, Response } from 'express';
-import { AuthGuard } from './guard/auth.guard';
+import { AuthGuard } from '../guard/auth.guard';
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}

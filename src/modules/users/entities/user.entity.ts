@@ -1,4 +1,4 @@
-import { Link } from 'src/links/entities/link.entity';
+import { Link } from 'src/modules/links/entities/link.entity';
 import {
   Column,
   CreateDateColumn,

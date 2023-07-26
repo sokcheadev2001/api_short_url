@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateLinkDto } from './dto/create-link.dto';
+import { CreateLinkDto } from '../dto/create-link.dto';
 import { Repository } from 'typeorm';
-import { Link } from './entities/link.entity';
+import { Link } from '../entities/link.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { nanoid } from 'nanoid/async';
 @Injectable()

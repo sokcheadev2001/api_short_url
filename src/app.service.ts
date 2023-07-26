@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { LinksService } from './links/links.service';
+import { LinksService } from './modules/links/services/links.service';
 
 @Injectable()
 export class AppService {
