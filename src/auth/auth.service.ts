@@ -4,7 +4,7 @@ import * as bcrypt from 'bcrypt';
 import { SignInDto } from './dto/signIn.dto';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from './dto/register.dto';
-import { Request } from 'express';
+import { Request, Response } from 'express';
 @Injectable()
 export class AuthService {
   constructor(
@@ -12,7 +12,7 @@ export class AuthService {
     private jwtServices: JwtService,
   ) {}
 
-  async register(response, ip, registerDto: RegisterDto) {
+  async register(response: Response, ip: string, registerDto: RegisterDto) {
     const user = await this.usersService.create(ip, registerDto);
     const payload = { id: user.id, email: user.email };
     const accessToken = await this.jwtServices.signAsync(payload);
@@ -27,13 +27,12 @@ export class AuthService {
       secure: true,
       maxAge: 24 * 60 * 60 * 1000,
     });
-    const { password, ...result } = user;
     return {
-      user: { ...result, accessToken },
+      accessToken,
     };
   }
 
-  async signIn(response, signInDto: SignInDto) {
+  async signIn(response: Response, signInDto: SignInDto) {
     // Find the user with this email
     const user = await this.usersService.findOneByEmail(signInDto.email);
 
@@ -54,9 +53,8 @@ export class AuthService {
         secure: true,
         maxAge: 24 * 60 * 60 * 1000,
       });
-      const { password, ...result } = user;
       return {
-        user: { ...result, accessToken },
+        accessToken,
       };
     }
     throw new UnauthorizedException();
