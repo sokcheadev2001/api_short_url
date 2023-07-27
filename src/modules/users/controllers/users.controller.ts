@@ -7,6 +7,8 @@ import {
   Param,
   Delete,
   Req,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { CreateUserDto } from '../dto/create-user.dto';
@@ -19,7 +21,19 @@ export class UsersController {
 
   @Post()
   async create(@Req() request: Request, @Body() createUserDto: CreateUserDto) {
-    return await this.usersService.create(request.ip, createUserDto);
+    const existingUser = await this.usersService.findOneByEmail(
+      createUserDto.email,
+    );
+    if (existingUser === null) {
+      return await this.usersService.create(request.ip, createUserDto);
+    }
+    throw new HttpException(
+      {
+        status: HttpStatus.BAD_REQUEST,
+        error: 'User already exists',
+      },
+      HttpStatus.BAD_REQUEST,
+    );
   }
 
   @Get()
