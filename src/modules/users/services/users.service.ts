@@ -31,7 +31,7 @@ export class UsersService {
       newUser.email = createUserDto.email;
       newUser.password = hashPassword;
       newUser.ip = clientIp;
-      return this.usersRepository.save(newUser);
+      return await this.usersRepository.save(newUser);
     } catch (error) {
       throw new HttpException(
         {
@@ -70,7 +70,7 @@ export class UsersService {
 
   async findOneByEmail(email: string): Promise<User> {
     try {
-      const user = await this.usersRepository.findOneByOrFail({ email });
+      const user = await this.usersRepository.findOneBy({ email });
       return user;
     } catch (error) {
       throw new HttpException(

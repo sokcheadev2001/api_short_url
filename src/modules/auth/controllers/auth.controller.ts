@@ -19,8 +19,8 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @Post('register')
-  async register(
-    @Res() response: Response,
+  register(
+    @Res({ passthrough: true }) response: Response,
     @Req() request: Request,
     @Body() registerDto: RegisterDto,
   ) {
@@ -29,7 +29,7 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(200)
-  async login(
+  login(
     @Res({ passthrough: true }) response: Response,
     @Body() signInDto: SignInDto,
   ) {
