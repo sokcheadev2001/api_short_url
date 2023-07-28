@@ -15,6 +15,7 @@ import { SignInDto } from '../dto/signIn.dto';
 import { RegisterDto } from '../dto/register.dto';
 import { Request, Response } from 'express';
 import { AuthGuard } from '../guard/auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -39,6 +40,7 @@ export class AuthController {
   }
 
   @UseGuards(AuthGuard)
+  @ApiBearerAuth()
   @Get('profile')
   getProfile(@RequestDecorator() req) {
     return this.auth.Profile(req.user.id);
