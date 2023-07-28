@@ -20,73 +20,55 @@ export class UsersService {
     private usersRepository: Repository<User>,
     @Inject(REQUEST) private res: Response,
   ) {}
-  async create(clientIp: string, createUserDto: CreateUserDto) {
-    try {
-      // Handle password hashing
-      const salt = await bcrypt.genSalt();
-      const hashPassword = await bcrypt.hash(createUserDto.password, salt);
 
-      const newUser = new User();
-      newUser.username = createUserDto.username;
-      newUser.email = createUserDto.email;
-      newUser.password = hashPassword;
-      newUser.ip = clientIp;
-      return await this.usersRepository.save(newUser);
-    } catch (error) {
+  async create(clientIp: string, createUserDto: CreateUserDto): Promise<User> {
+    const existingUser = await this.findOneByEmail(createUserDto.email);
+    if (existingUser !== null) {
       throw new HttpException(
         {
-          status: HttpStatus.BAD_REQUEST,
-          error: 'Cannot create user',
+          status: HttpStatus.FORBIDDEN,
+          error: 'Email Already Existed',
         },
-        HttpStatus.BAD_REQUEST,
-        {
-          cause: error,
-        },
+        HttpStatus.FORBIDDEN,
       );
     }
+    // Handle password hashing
+    const salt = await bcrypt.genSalt();
+    const hashPassword = await bcrypt.hash(createUserDto.password, salt);
+
+    const newUser = new User();
+    newUser.username = createUserDto.username;
+    newUser.email = createUserDto.email;
+    newUser.password = hashPassword;
+    newUser.ip = clientIp;
+
+    return await this.usersRepository.save(newUser);
   }
 
-  findAll(): Promise<User[]> {
-    return this.usersRepository.find();
+  async findAll(): Promise<User[]> {
+    return await this.usersRepository.find();
   }
 
   async findOne(id: number): Promise<User> {
-    try {
-      const user = await this.usersRepository.findOneByOrFail({ id });
-      return user;
-    } catch (error) {
+    const user = await this.usersRepository.findOneBy({ id });
+    if (user === null) {
       throw new HttpException(
         {
           status: HttpStatus.NOT_FOUND,
           error: 'User not found',
         },
         HttpStatus.NOT_FOUND,
-        {
-          cause: error,
-        },
       );
     }
+    return user;
   }
 
   async findOneByEmail(email: string): Promise<User> {
-    try {
-      const user = await this.usersRepository.findOneBy({ email });
-      return user;
-    } catch (error) {
-      throw new HttpException(
-        {
-          status: HttpStatus.NOT_FOUND,
-          error: 'User not found',
-        },
-        HttpStatus.NOT_FOUND,
-        {
-          cause: error,
-        },
-      );
-    }
+    const user = await this.usersRepository.findOneBy({ email });
+    return user;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto) {
+  async update(id: number, updateUserDto: UpdateUserDto): Promise<User> {
     try {
       const existingUser = await this.findOne(id);
       if (existingUser) {
@@ -110,7 +92,7 @@ export class UsersService {
     }
   }
 
-  async remove(id: number) {
+  async remove(id: number): Promise<User> {
     try {
       const existingUser = await this.findOne(id);
       if (existingUser) {

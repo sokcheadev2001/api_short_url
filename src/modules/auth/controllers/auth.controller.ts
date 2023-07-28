@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpCode,
+  HttpStatus,
   Post,
   Req,
   Request as RequestDecorator,
@@ -14,9 +15,10 @@ import { SignInDto } from '../dto/signIn.dto';
 import { RegisterDto } from '../dto/register.dto';
 import { Request, Response } from 'express';
 import { AuthGuard } from '../guard/auth.guard';
+
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(private auth: AuthService) {}
 
   @Post('register')
   register(
@@ -24,27 +26,27 @@ export class AuthController {
     @Req() request: Request,
     @Body() registerDto: RegisterDto,
   ) {
-    return this.authService.register(response, request.ip, registerDto);
+    return this.auth.register(response, request.ip, registerDto);
   }
 
   @Post('login')
-  @HttpCode(200)
+  @HttpCode(HttpStatus.OK)
   login(
     @Res({ passthrough: true }) response: Response,
     @Body() signInDto: SignInDto,
   ) {
-    return this.authService.signIn(response, signInDto);
+    return this.auth.signIn(response, signInDto);
   }
 
   @UseGuards(AuthGuard)
   @Get('profile')
   getProfile(@RequestDecorator() req) {
-    return this.authService.Profile(req.user.id);
+    return this.auth.Profile(req.user.id);
   }
 
   // @UseGuards(AuthGuard)
   @Post('refresh')
-  async refresh(@Req() request: Request) {
-    return this.authService.refreshToken(request);
+  refresh(@Req() request: Request) {
+    return this.auth.refreshToken(request);
   }
 }
