@@ -13,33 +13,33 @@ import { CreateLinkDto } from '../dto/create-link.dto';
 import { AuthGuard } from 'src/modules/auth/guard/auth.guard';
 
 @Controller('links')
-// @UseGuards(AuthGuard)
 export class LinksController {
-  constructor(private readonly linksService: LinksService) {}
+  constructor(private readonly links: LinksService) {}
+
   @UseGuards(AuthGuard)
   @Post()
-  create(@Req() req, @Body() createLinkDto: CreateLinkDto) {
-    return this.linksService.create(req, createLinkDto);
+  create(@Req() req: Request, @Body() createLinkDto: CreateLinkDto) {
+    return this.links.create(req, createLinkDto);
   }
 
   @UseGuards(AuthGuard)
   @Get('/user')
-  getUserLinks(@Req() req) {
-    return this.linksService.getUserLinks(req);
+  getUserLinks(@Req() req: Request) {
+    return this.links.getUserLinks(req);
   }
 
   @Get()
   findAll() {
-    return this.linksService.findAll();
+    return this.links.findAll();
   }
 
   @Get(':short_url')
   findOne(@Param('id') short_url: string) {
-    return this.linksService.findOne(short_url);
+    return this.links.findOne(short_url);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.linksService.remove(+id);
+    return this.links.remove(+id);
   }
 }

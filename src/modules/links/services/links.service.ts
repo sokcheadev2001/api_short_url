@@ -59,15 +59,28 @@ export class LinksService {
     return link.long_url;
   }
 
-  findAll() {
-    return `This action returns all links`;
+  async findAll() {
+    return await this.linksRepository.find();
   }
 
   async findOne(short_url: string) {
     return await this.linksRepository.findOneBy({ short_url });
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} link`;
+  async remove(id: number) {
+    try {
+      const link = await this.linksRepository.findOneBy({ id: id });
+      if (link) {
+        return this.linksRepository.remove(link);
+      }
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'Link not found',
+        },
+        HttpStatus.NOT_FOUND,
+      );
+    }
   }
 }

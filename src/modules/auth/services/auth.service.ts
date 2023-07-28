@@ -75,9 +75,8 @@ export class AuthService {
       const payload = await this.jwtServices.verifyAsync(refreshToken, {
         secret: process.env.JWT_REFRESH_SECRET_KEY,
       });
-      const id = payload.id;
-      const email = payload.email;
 
+      const { id, email } = payload;
       const accessToken = await this.jwtServices.signAsync({ id, email });
       return { accessToken };
     } catch (error) {
